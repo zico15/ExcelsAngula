@@ -3,6 +3,7 @@ import { Row } from 'exceljs';
 import { env } from 'process';
 import { environment } from 'src/environments/environment';
 import { ExcelService, Washed } from 'src/service/excel.service';
+import { MomentjsService } from 'src/service/momentjs.service';
 import { TableComponent } from '../table/table/table.component';
 
 @Component({
@@ -20,7 +21,6 @@ export class AppComponent implements OnInit {
 
   constructor()
   {
-	
   }
   ngOnInit(): void {}
 
@@ -32,7 +32,7 @@ export class AppComponent implements OnInit {
     await excel.importFile(file);
 	try {
 		this.fieldList = await excel.getValues(excel.getWorksheet(1));
-		console.log("LIST OK => " + JSON.stringify(this.fieldList));	
+		console.log("LIST OK => " + this.fieldList);	
 	} catch (error) {
 		let w = error;
 		this.fieldList = JSON.parse(JSON.stringify(error));
@@ -52,6 +52,7 @@ export class AppComponent implements OnInit {
     excel.setColumColor(['A', 'B', 'C', 'D', 'E']);
 	excel.setColumDropDown(pagie1, 'B', ["Não", "Sim"]);
     excel.setColumDate(pagie1, 'E');
+	excel.setColumText(pagie1, 'D');
     excel.setResizePage(pagie1);	
 	const values: Array<string> = environment.results.map((n) => n.name);
 	excel.setColumDropDown(pagie1, 'C', values);

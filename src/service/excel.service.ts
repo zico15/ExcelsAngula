@@ -73,8 +73,23 @@ export class ExcelService {
         allowBlank: true,
         formulae: [],
       };
-      cell.value = MomentjsService.format(new Date(), 'DD/MM/yyyy');
+      cell.value = MomentjsService.format(new Date(), 'DD/MM/yyyy').toString();
+	  console.log(MomentjsService.format(new Date(), 'DD/MM/yyyy').toString());
       cell.numFmt = 'yyyy/m/d';
+    }
+  }
+
+  setColumText(worksheet: Worksheet, colum: string, max?: number) {
+    const size: Number = max == undefined ? 100 : max;
+    for (let i = 2; i < size; i++) {
+      let cell: Cell = worksheet.getCell(colum + i);
+      cell.dataValidation = {
+        type: 'textLength',
+        allowBlank: true,
+		formulae: []
+      };
+	  cell.value = "";
+	  cell.numFmt = '@';
     }
   }
 
@@ -121,10 +136,10 @@ export class ExcelService {
     });
   }
 
-  private async isValidateWashed(washed: Washed): Promise<boolean> {
+  private isValidateWashed(washed: Washed): boolean {
 
 	let plate:string = washed.plate ? washed.plate : '';
-	plate = await GlobalService.validatePlate(plate);
+	plate = GlobalService.validatePlate(plate);
 	if (plate && washed.created && washed.type)
 		return (true);
 	return (false);
@@ -136,26 +151,24 @@ export class ExcelService {
 	const rows: Row[] = [];
 
 	sheet?.eachRow(async (row, rowNumber) => {
-		if (rowNumber > 1 && row.getCell(1).value)
-			rows.push(row);
-	});
-	await Promise.all(rows.map(async (row, rowNumber) => {
 		if (rowNumber > 1)
-		{	
-			
+		{
 			let isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
+			let hour:any = row.getCell(4).value?.toString();
+			let date:any = row.getCell(5).value?.toString();
 			let data:Washed = {
 				plate: row.getCell(1).value?.toString(),
 				matriculaEstrangeira: isEstrangeira == 'SIM' ? true : false,
 				type: row.getCell(3).value?.toString(),
-				created: new Date()
+				created: MomentjsService.getMoment(hour + date, 'HH:mm DD/MM/yyyy').toDate()
 			};
-			if (await this.isValidateWashed(data))
+			if (MomentjsService.isValid(hour, 'HH:mm') && 
+			MomentjsService.isValid(date, 'DD/MM/yyyy')	&& this.isValidateWashed(data))
 				values.push(data);
-			else				
+			else if(data.plate)			
 				erros.push(data);
-		}
-	}));
+		}			
+	});
     if (erros.length > 0) throw erros;
     return values;
   }

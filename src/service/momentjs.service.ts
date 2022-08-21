@@ -12,10 +12,23 @@ export class MomentjsService {
    * @example format(11/02/1999, 'DD/MM/YYYY')
    * @returns Moment Date Object.
    */
-  static format(date: any, value?: string) {
-    return moment(date).format(value);
-  }
+  	static format(date: any, value?: string) {
+  	  return moment(date).format(value);
+  	}
 
+	static isValid(date: any, format: string): boolean {
+	  return moment(date, format, true).isValid();
+	}
+
+	static getMoment(date: any, format: string): moment.Moment
+	{
+		return moment(date, format);
+	}
+  
+// static momendt(): moment.Moment
+// {
+// 	// return new moment();
+// }
   // /** Verificar se é data válida */
   // isValid(date: any): boolean {
   //   return moment(date, true).isValid();
