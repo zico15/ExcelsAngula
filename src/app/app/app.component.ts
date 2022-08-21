@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
       'Data',
     ]);
     excel.setColumColor(['A', 'B', 'C', 'D', 'E']);
-	excel.setColumDropDown(pagie1, 'B', ["Sim", "Não"]);
+	excel.setColumDropDown(pagie1, 'B', ["Não", "Sim"]);
     excel.setColumDate(pagie1, 'E');
     excel.setResizePage(pagie1);	
 	const values: Array<string> = environment.results.map((n) => n.name);
