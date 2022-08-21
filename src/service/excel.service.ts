@@ -1,17 +1,32 @@
-import { Injectable } from '@angular/core';
-import { Cell, CellValue, Column, Row, Workbook, Worksheet } from 'exceljs';
+import { Cell, Row, Workbook, Worksheet } from 'exceljs';
 import { environment } from 'src/environments/environment';
 import { MomentjsService } from './momentjs.service';
 import * as fs from 'file-saver';
 import { GlobalService } from './global.service';
 
-// @Injectable({
-//   providedIn: 'root',
-// })
 export class ExcelService {
   workbook = new Workbook();
 
-  constructor(fileName: String) {}
+  constructor(fileName: String) {
+	this.generateExcel();
+  }
+
+  generateExcel() {
+    let pagie1 = this.createWorksheet('Table 1', [
+      'Matrícula',
+      'Matrícula é estrangeira?',
+      'Serviço',
+	  'Hora',
+      'Data',
+    ]);
+    this.setColumColor(['A', 'B', 'C', 'D', 'E']);
+	this.setColumDropDown(pagie1, 'B', ["Não", "Sim"]);
+    this.setColumDate(pagie1, 'E');
+	this.setColumText(pagie1, 'D');
+    this.setResizePage(pagie1);	
+	const values: Array<string> = environment.results.map((n) => n.name);
+	this.setColumDropDown(pagie1, 'C', values);
+  }
 
   createWorksheet(pagineNmae: string, header?: string[]): Worksheet {
     let worksheet: Worksheet = this.workbook.addWorksheet(pagineNmae);
@@ -21,11 +36,6 @@ export class ExcelService {
 
   async importFile(file: File) {
     this.workbook = await this.workbook.xlsx.load(await file.arrayBuffer());
-	/*this.workbook.eachSheet(e => {
-		e.eachRow(r => {
-			console.log(r.values);
-		})
-	});*/
   }
 
   getWorkbook(): Workbook {
@@ -140,7 +150,7 @@ export class ExcelService {
 
 	let plate:string = washed.plate ? washed.plate : '';
 	plate = GlobalService.validatePlate(plate);
-	if (plate && washed.created && washed.type)
+	if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
 		return (true);
 	return (false);
   }

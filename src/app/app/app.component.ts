@@ -32,30 +32,15 @@ export class AppComponent implements OnInit {
     await excel.importFile(file);
 	try {
 		this.fieldList = await excel.getValues(excel.getWorksheet(1));
-		console.log("LIST OK => " + this.fieldList);	
-	} catch (error) {
-		let w = error;
-		this.fieldList = JSON.parse(JSON.stringify(error));
-		console.log("LIST ERROR => " + (JSON.stringify(error)));
+		console.log("LIST OK => " + (JSON.stringify(this.fieldList)));	
+	} catch (error: any) {
+		this.fieldList = error;
+		console.log("LIST ERROR => " + (JSON.stringify(this.fieldList)));
 	}
   }
 
   generateExcel() {
     let excel = new ExcelService('testeSave');
-    let pagie1 = excel.createWorksheet('Table 1', [
-      'Matrícula',
-      'Matrícula é estrangeira?',
-      'Serviço',
-	  'Hora',
-      'Data',
-    ]);
-    excel.setColumColor(['A', 'B', 'C', 'D', 'E']);
-	excel.setColumDropDown(pagie1, 'B', ["Não", "Sim"]);
-    excel.setColumDate(pagie1, 'E');
-	excel.setColumText(pagie1, 'D');
-    excel.setResizePage(pagie1);	
-	const values: Array<string> = environment.results.map((n) => n.name);
-	excel.setColumDropDown(pagie1, 'C', values);
     excel.exportFile();
   }
 }
