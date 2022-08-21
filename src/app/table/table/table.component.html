@@ -1,0 +1,19 @@
+<div class="container">
+	<div class="table">
+		<div class="table-header">
+			<div class="header__item"><a id="name" class="filter__link" href="#">Name</a></div>
+			<div class="header__item"><a id="wins" class="filter__link filter__link--number" href="#">Wins</a></div>
+			<div class="header__item"><a id="draws" class="filter__link filter__link--number" href="#">Draws</a></div>
+			<div class="header__item"><a id="losses" class="filter__link filter__link--number" href="#">Losses</a></div>
+			<div class="header__item"><a id="total" class="filter__link filter__link--number" href="#">Total</a></div>
+		</div>
+		<div class="table-content">	
+			<div class="table-row" *ngFor="let n of fieldArray; let i = index;">		
+				<div class="table-data">{{n.plate}}</div>
+				<div class="table-data">{{n.matriculaEstrangeira}}</div>
+				<div class="table-data">{{n.type}}</div>
+				<div class="table-data">{{n.created}}</div>
+			</div>		
+		</div>	
+	</div>
+</div>
