@@ -1,14 +1,14 @@
 import { Cell, Row, Workbook, Worksheet } from 'exceljs';
 import { environment } from 'src/environments/environment';
 import { MomentjsService } from './momentjs.service';
-import * as fs from 'file-saver';
 import { GlobalService } from './global.service';
+import * as fs from 'file-saver';
 
 export class ExcelService {
   workbook = new Workbook();
 
-  constructor(fileName: String) {
-	this.generateExcel();
+  constructor(public fileName: String) {
+    this.generateExcel();
   }
 
   generateExcel() {
@@ -16,16 +16,16 @@ export class ExcelService {
       'Matrícula',
       'Matrícula é estrangeira?',
       'Serviço',
-	  'Hora',
+      'Hora',
       'Data',
     ]);
     this.setColumColor(['A', 'B', 'C', 'D', 'E']);
-	this.setColumDropDown(pagie1, 'B', ["Não", "Sim"]);
+    this.setColumDropDown(pagie1, 'B', ['Não', 'Sim']);
     this.setColumDate(pagie1, 'E');
-	this.setColumText(pagie1, 'D');
-    this.setResizePage(pagie1);	
-	const values: Array<string> = environment.results.map((n) => n.name);
-	this.setColumDropDown(pagie1, 'C', values);
+    this.setColumText(pagie1, 'D');
+    this.setResizePage(pagie1);
+    const values: Array<string> = environment.results.map((n) => n.name);
+    this.setColumDropDown(pagie1, 'C', values);
   }
 
   createWorksheet(pagineNmae: string, header?: string[]): Worksheet {
@@ -55,13 +55,17 @@ export class ExcelService {
     });
   }
 
-  setColumDropDown(worksheet: Worksheet, colum: string, values: string[], max?: number) {
+  setColumDropDown(
+    worksheet: Worksheet,
+    colum: string,
+    values: string[],
+    max?: number
+  ) {
     const size: Number = max == undefined ? 100 : max;
-	let	sizeText:number = 12;
-	values.map(n => {
-		if (n.length > sizeText)
-			sizeText = n.length;
-	});
+    let sizeText: number = 12;
+    values.map((n) => {
+      if (n.length > sizeText) sizeText = n.length;
+    });
     for (let i = 2; i < size; i++) {
       let cell: Cell = worksheet.getCell(colum + i);
       cell.dataValidation = {
@@ -71,7 +75,7 @@ export class ExcelService {
       };
       cell.value = values[0];
     }
-	worksheet.getColumn(colum).width = sizeText + 3;
+    worksheet.getColumn(colum).width = sizeText + 3;
   }
 
   setColumDate(worksheet: Worksheet, colum: string, max?: number) {
@@ -84,7 +88,7 @@ export class ExcelService {
         formulae: [],
       };
       cell.value = MomentjsService.format(new Date(), 'DD/MM/yyyy').toString();
-	  console.log(MomentjsService.format(new Date(), 'DD/MM/yyyy').toString());
+      console.log(MomentjsService.format(new Date(), 'DD/MM/yyyy').toString());
       cell.numFmt = 'yyyy/m/d';
     }
   }
@@ -96,17 +100,17 @@ export class ExcelService {
       cell.dataValidation = {
         type: 'textLength',
         allowBlank: true,
-		formulae: []
+        formulae: [],
       };
-	  cell.value = "";
-	  cell.numFmt = '@';
+      cell.value = '';
+      cell.numFmt = '@';
     }
   }
 
   setColumColor(colum: string[]) {
     this.workbook.eachSheet((worksheet) => {
       colum.forEach((c) => {
-        let color:string = 'ffffff';
+        let color: string = 'ffffff';
         for (let i = 1; i < 100; i++) {
           let cell: Cell = worksheet.getCell(c + i);
           cell.fill = {
@@ -114,8 +118,8 @@ export class ExcelService {
             pattern: 'solid',
             fgColor: { argb: color },
           };
-		  cell.style.alignment = { horizontal: 'center', vertical: 'middle' };
-		  color = (color == 'ffffff' ? 'dfdfdb' : 'ffffff');
+          cell.style.alignment = { horizontal: 'center', vertical: 'middle' };
+          color = color == 'ffffff' ? 'dfdfdb' : 'ffffff';
           cell.border = {
             top: { style: 'thin' },
             left: { style: 'thin' },
@@ -132,53 +136,54 @@ export class ExcelService {
       row.height = 20;
     });
     worksheet.columns.forEach((c) => {
-		c.alignment = { vertical: 'middle', horizontal: 'center' };
-    	if (!size) {
-        		let rowSize: number = 0;
-        		c.values?.forEach((value) => {
-          		if (value && rowSize < value.toString().length)
-            		rowSize = value.toString().length;
-        	});
-        	c.width = rowSize < 10 ? 12 : rowSize + 3;
-     	} 
-	  	else 
-	  		c.width = size;
+      c.alignment = { vertical: 'middle', horizontal: 'center' };
+      if (!size) {
+        let rowSize: number = 0;
+        c.values?.forEach((value) => {
+          if (value && rowSize < value.toString().length)
+            rowSize = value.toString().length;
+        });
+        c.width = rowSize < 10 ? 12 : rowSize + 3;
+      } else c.width = size;
     });
   }
 
   private isValidateWashed(washed: Washed): boolean {
-
-	let plate:string = washed.plate ? washed.plate : '';
-	plate = GlobalService.validatePlate(plate);
-	if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
-		return (true);
-	return (false);
+    let plate: string = washed.plate ? washed.plate : '';
+    plate = GlobalService.validatePlate(plate);
+    if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
+      return true;
+    return false;
   }
 
   async getValues(sheet: Worksheet): Promise<Array<Washed>> {
     const values: Washed[] = [];
     const erros: Washed[] = [];
-	const rows: Row[] = [];
+    const rows: Row[] = [];
 
-	sheet?.eachRow(async (row, rowNumber) => {
-		if (rowNumber > 1)
-		{
-			let isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
-			let hour:any = row.getCell(4).value?.toString();
-			let date:any = row.getCell(5).value?.toString();
-			let data:Washed = {
-				plate: row.getCell(1).value?.toString(),
-				matriculaEstrangeira: isEstrangeira == 'SIM' ? true : false,
-				type: row.getCell(3).value?.toString(),
-				created: MomentjsService.getMoment(hour + date, 'HH:mm DD/MM/yyyy').toDate()
-			};
-			if (MomentjsService.isValid(hour, 'HH:mm') && 
-			MomentjsService.isValid(date, 'DD/MM/yyyy')	&& this.isValidateWashed(data))
-				values.push(data);
-			else if(data.plate)			
-				erros.push(data);
-		}			
-	});
+    sheet?.eachRow(async (row, rowNumber) => {
+      if (rowNumber > 1) {
+        let isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
+        let hour: any = row.getCell(4).value?.toString();
+        let date: any = row.getCell(5).value?.toString();
+        let data: Washed = {
+          plate: row.getCell(1).value?.toString(),
+          matriculaEstrangeira: isEstrangeira == 'SIM' ? true : false,
+          type: row.getCell(3).value?.toString(),
+          created: MomentjsService.getMoment(
+            hour + date,
+            'HH:mm DD/MM/yyyy'
+          ).toDate(),
+        };
+        if (
+          MomentjsService.isValid(hour, 'HH:mm') &&
+          MomentjsService.isValid(date, 'DD/MM/yyyy') &&
+          this.isValidateWashed(data)
+        )
+          values.push(data);
+        else if (data.plate) erros.push(data);
+      }
+    });
     if (erros.length > 0) throw erros;
     return values;
   }

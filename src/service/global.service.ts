@@ -6,16 +6,16 @@ import { Injectable } from '@angular/core';
 export class GlobalService {
   constructor() {}
 
-	public static validatePlate(plate: string): string {
+  public static validatePlate(plate: string): string {
     // se já tiver hifen e for portuguesa
     if (
       plate.match('-') &&
       plate.length == 8 &&
-      (this.isHasLetterAndNumber(plate))
+      this.isHasLetterAndNumber(plate)
     ) {
       return plate.toUpperCase();
       // Se portuguesa sem '-', add '-'
-    } else if (plate.length == 6 && (this.isHasLetterAndNumber(plate))) {
+    } else if (plate.length == 6 && this.isHasLetterAndNumber(plate)) {
       plate =
         plate.substring(0, 2) +
         '-' +

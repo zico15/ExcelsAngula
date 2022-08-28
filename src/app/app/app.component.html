@@ -7,10 +7,16 @@
 <!-- * * * * * * * to get started with your project! * * * * * * * * -->
 <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
 
-<div >
-<h1 style="margin-left: 10px;">TESTER: {{name}} </h1>
-<button  type="file"  name="files[]" accept=".xlsx"  multiple id="jsonFile"  (click)="openFile($event)"> Open Excel</button>
-<button (click)="generateExcel()"> Generate Excel</button>
-<input type="file" (change)="openFile($event)">
+<button
+  type="file"
+  name="files[]"
+  accept=".xlsx"
+  multiple
+  id="jsonFile"
+  (click)="openFile($event)"
+>
+  Open Excel
+</button>
+<button (click)="generateExcel()">Generate Excel</button>
+<input type="file" (change)="openFile($event)" />
 <app-table [fieldArray]="fieldList"></app-table>
-</div>

@@ -1,23 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Washed } from 'src/service/excel.service';
 
 @Component({
   selector: 'app-table',
-  templateUrl: './table.component.html', 
-  styleUrls: ['./table.component.scss']
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.scss'],
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
+  @Input() fieldArray: Array<Washed> = [];
 
-  	@Input() fieldArray: Array<Washed> = [];
-  
-  	constructor() { }
-  
-  	ngOnInit(): void {
-  	}
-
-	 
-    addFieldValue() {
-		let w = {plate: "dsd", matriculaEstrangeira: true, type: "sds", created: new Date()};
-        this.fieldArray.push(w);
-    }
+  addFieldValue() {
+    let w = {
+      plate: 'dsd',
+      matriculaEstrangeira: true,
+      type: 'sds',
+      created: new Date(),
+    };
+    this.fieldArray.push(w);
+  }
 }
