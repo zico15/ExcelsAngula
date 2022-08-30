@@ -8,14 +8,4 @@ import { Washed } from 'src/service/excel.service';
 })
 export class TableComponent {
   @Input() fieldArray: Array<Washed> = [];
-
-  addFieldValue() {
-    let w = {
-      plate: 'dsd',
-      matriculaEstrangeira: true,
-      type: 'sds',
-      created: new Date(),
-    };
-    this.fieldArray.push(w);
-  }
 }

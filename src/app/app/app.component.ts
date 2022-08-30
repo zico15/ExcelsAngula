@@ -17,10 +17,9 @@ export class AppComponent {
     await excel.importFile(file);
     try {
       this.fieldList = await excel.getValues(excel.getWorksheet(1));
-      console.log('LIST OK => ' + JSON.stringify(this.fieldList));
+      console.log(this.fieldList);
     } catch (error: any) {
-      this.fieldList = error;
-      console.log('LIST ERROR => ' + JSON.stringify(this.fieldList));
+      console.log('LIST ERROR => ' + JSON.stringify(error));
     }
   }
 
