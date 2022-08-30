@@ -84,8 +84,7 @@ export class ExcelService {
         formulae: [],
       };
       cell.value = MomentjsService.format(new Date(), 'DD/MM/yyyy').toString();
-      console.log(MomentjsService.format(new Date(), 'DD/MM/yyyy').toString());
-      cell.numFmt = 'yyyy/m/d';
+      cell.numFmt = 'DD/MM/yyyy';
     }
   }
 
