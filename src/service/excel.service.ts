@@ -1,8 +1,9 @@
-import { Cell, Row, Workbook, Worksheet } from 'exceljs';
+import { Cell, Workbook, Worksheet } from 'exceljs';
 import { environment } from 'src/environments/environment';
 import { MomentjsService } from './momentjs.service';
 import { GlobalService } from './global.service';
 import * as fs from 'file-saver';
+import * as moment from 'moment';
 
 export class ExcelService {
   private workbook = new Workbook();
@@ -24,14 +25,7 @@ export class ExcelService {
     this.setColumDate(pagie1, 'E');
     this.setColumText(pagie1, 'D');
     this.setResizePage(pagie1);
-    const values: Array<string> = environment.results.map((n) => n.name);
-    this.setColumDropDown(pagie1, 'C', values);
-  }
-
-  createWorksheet(pagineNmae: string, header?: string[]): Worksheet {
-    let worksheet: Worksheet = this.workbook.addWorksheet(pagineNmae);
-    if (header != undefined) worksheet.addRow(header);
-    return worksheet;
+    this.setColumDropDown(pagie1, 'C', this.getDropDownValues);
   }
 
   async importFile(file: File) {
@@ -144,22 +138,14 @@ export class ExcelService {
   }
 
   public async getValues(sheet: Worksheet): Promise<Array<Washed>> {
-    let plate: string = washed.plate ? washed.plate : '';
-    plate = GlobalService.validatePlate(plate);
-    if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
-      return true;
-    return false;
-  }
-
-  async getValues(sheet: Worksheet): Promise<Array<Washed>> {
     const values: Washed[] = [];
     const erros: Washed[] = [];
-    const rows: Row[] = [];
 
     sheet?.eachRow(async (row, rowNumber) => {
       if (rowNumber > 1) {
-        let isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
-        let hour: any = row.getCell(4).value?.toString();
+        const isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
+        const hour: any = row.getCell(4).value?.toString();
+        const plate: any = row.getCell(1).value?.toString().toUpperCase();
         let date: any = row.getCell(5).value?.toString();
         if (moment(date).isValid())
           date = MomentjsService.format(date, 'DD/MM/yyyy');
@@ -173,8 +159,7 @@ export class ExcelService {
           ).toDate(),
         };
         if (
-          MomentjsService.isValid(hour, 'HH:mm') &&
-          MomentjsService.isValid(date, 'DD/MM/yyyy') &&
+          MomentjsService.isValid(data.created, '') &&
           this.isValidateWashed(data)
         )
           values.push(data);
@@ -183,6 +168,24 @@ export class ExcelService {
     });
     if (erros.length > 0) throw erros;
     return values;
+  }
+
+  private get getDropDownValues() {
+    return environment.results.map((n) => n.name);
+  }
+
+  private isValidateWashed(washed: Washed): boolean {
+    let plate: string = washed.plate ? washed.plate : '';
+    plate = GlobalService.validatePlate(plate);
+    if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
+      return true;
+    return false;
+  }
+
+  private createWorksheet(pagineNmae: string, header?: string[]): Worksheet {
+    let worksheet: Worksheet = this.workbook.addWorksheet(pagineNmae);
+    if (header != undefined) worksheet.addRow(header);
+    return worksheet;
   }
 }
 
