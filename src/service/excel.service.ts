@@ -167,7 +167,7 @@ export class ExcelService {
           type: row.getCell(3).value?.toString(),
           created: MomentjsService.getMoment(
             hour + date,
-            'HH:mm DD/MM/yyyy'
+            'HH:mmDD/MM/yyyy'
           ).toDate(),
         };
         if (
