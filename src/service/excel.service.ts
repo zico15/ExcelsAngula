@@ -162,7 +162,7 @@ export class ExcelService {
         let hour: any = row.getCell(4).value?.toString();
         let date: any = row.getCell(5).value?.toString();
         let data: Washed = {
-          plate: row.getCell(1).value?.toString(),
+          plate: GlobalService.validatePlate(plate),
           matriculaEstrangeira: isEstrangeira == 'SIM' ? true : false,
           type: row.getCell(3).value?.toString(),
           created: MomentjsService.getMoment(
