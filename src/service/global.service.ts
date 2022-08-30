@@ -4,26 +4,25 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class GlobalService {
-  constructor() {}
-
   public static validatePlate(plate: string): string {
     // se já tiver hifen e for portuguesa
-    if (
-      plate.match('-') &&
-      plate.length == 8 &&
-      this.isHasLetterAndNumber(plate)
-    ) {
-      return plate.toUpperCase();
-      // Se portuguesa sem '-', add '-'
-    } else if (plate.length == 6 && this.isHasLetterAndNumber(plate)) {
-      plate =
-        plate.substring(0, 2) +
-        '-' +
-        plate.substring(2, 2) +
-        '-' +
-        plate.substring(4, 5);
-      return plate.toUpperCase();
-    }
+    if (plate)
+      if (
+        plate.match('-') &&
+        plate.length == 8 &&
+        this.isHasLetterAndNumber(plate)
+      ) {
+        return plate.toUpperCase();
+        // Se portuguesa sem '-', add '-'
+      } else if (plate.length == 6 && this.isHasLetterAndNumber(plate)) {
+        plate =
+          plate.substr(0, 2) +
+          '-' +
+          plate.substr(2, 2) +
+          '-' +
+          plate.substr(4, 5);
+        return plate.toUpperCase();
+      }
     return '';
   }
 
