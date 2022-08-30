@@ -161,6 +161,8 @@ export class ExcelService {
         let isEstrangeira = row.getCell(2).value?.toString().toUpperCase();
         let hour: any = row.getCell(4).value?.toString();
         let date: any = row.getCell(5).value?.toString();
+        if (moment(date).isValid())
+          date = MomentjsService.format(date, 'DD/MM/yyyy');
         let data: Washed = {
           plate: GlobalService.validatePlate(plate),
           matriculaEstrangeira: isEstrangeira == 'SIM' ? true : false,
