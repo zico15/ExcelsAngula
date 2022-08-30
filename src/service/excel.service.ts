@@ -5,9 +5,9 @@ import { GlobalService } from './global.service';
 import * as fs from 'file-saver';
 
 export class ExcelService {
-  workbook = new Workbook();
+  private workbook = new Workbook();
 
-  constructor(public fileName: String) {
+  constructor(private fileName: string) {
     this.generateExcel();
   }
 
@@ -38,15 +38,11 @@ export class ExcelService {
     this.workbook = await this.workbook.xlsx.load(await file.arrayBuffer());
   }
 
-  getWorkbook(): Workbook {
-    return this.workbook;
-  }
-
-  getWorksheet(indexSheet: number): Worksheet {
+  public getWorksheet(indexSheet: number): Worksheet {
     return this.workbook.getWorksheet(indexSheet);
   }
 
-  exportFile(): void {
+  public exportFile(): void {
     this.workbook.xlsx.writeBuffer().then((data) => {
       let blob = new Blob([data], {
         type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -55,7 +51,7 @@ export class ExcelService {
     });
   }
 
-  setColumDropDown(
+  public setColumDropDown(
     worksheet: Worksheet,
     colum: string,
     values: string[],
@@ -78,7 +74,7 @@ export class ExcelService {
     worksheet.getColumn(colum).width = sizeText + 3;
   }
 
-  setColumDate(worksheet: Worksheet, colum: string, max?: number) {
+  public setColumDate(worksheet: Worksheet, colum: string, max?: number) {
     const size: Number = max == undefined ? 100 : max;
     for (let i = 2; i < size; i++) {
       let cell: Cell = worksheet.getCell(colum + i);
@@ -93,7 +89,7 @@ export class ExcelService {
     }
   }
 
-  setColumText(worksheet: Worksheet, colum: string, max?: number) {
+  public setColumText(worksheet: Worksheet, colum: string, max?: number) {
     const size: Number = max == undefined ? 100 : max;
     for (let i = 2; i < size; i++) {
       let cell: Cell = worksheet.getCell(colum + i);
@@ -107,7 +103,7 @@ export class ExcelService {
     }
   }
 
-  setColumColor(colum: string[]) {
+  public setColumColor(colum: string[]) {
     this.workbook.eachSheet((worksheet) => {
       colum.forEach((c) => {
         let color: string = 'ffffff';
@@ -131,7 +127,7 @@ export class ExcelService {
     });
   }
 
-  setResizePage(worksheet: Worksheet, size?: number) {
+  public setResizePage(worksheet: Worksheet, size?: number) {
     worksheet.eachRow((row) => {
       row.height = 20;
     });
@@ -148,7 +144,7 @@ export class ExcelService {
     });
   }
 
-  private isValidateWashed(washed: Washed): boolean {
+  public async getValues(sheet: Worksheet): Promise<Array<Washed>> {
     let plate: string = washed.plate ? washed.plate : '';
     plate = GlobalService.validatePlate(plate);
     if ((plate || washed.matriculaEstrangeira) && washed.created && washed.type)
