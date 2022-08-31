@@ -3,7 +3,6 @@ import { environment } from 'src/environments/environment';
 import { MomentjsService } from './momentjs.service';
 import { GlobalService } from './global.service';
 import * as fs from 'file-saver';
-import * as moment from 'moment';
 
 export class ExcelService {
   private workbook = new Workbook();
@@ -140,27 +139,28 @@ export class ExcelService {
   public async getValues(sheet: Worksheet): Promise<Array<Washed>> {
     const values: Washed[] = [];
     const erros: Washed[] = [];
-
     sheet?.eachRow(async (row, rowNumber) => {
       if (rowNumber > 1) {
         const isEstrangeira = row.getCell(2).value == 'Sim';
         const hour: any = row.getCell(4).value?.toString();
         const plate: any = row.getCell(1).value?.toString().toUpperCase();
-        let date: any = row.getCell(5).value?.toString();
-        if (moment(date).isValid())
-          date = MomentjsService.format(date, 'DD/MM/yyyy');
-        let data: Washed = {
-          plate: GlobalService.validatePlate(plate),
-          matriculaEstrangeira: isEstrangeira,
-          type: row.getCell(3).value,
-          created: MomentjsService.getMoment(
-            hour + date,
-            'HH:mmDD/MM/yyyy'
-          ).toDate(),
-        };
-        if (isEstrangeira) data.plate = plate;
-        if (this.isValidateWashed(data)) values.push(data);
-        else if (data.plate) erros.push(data);
+        let date: any = row.getCell(5).value;
+        if (plate) {
+          if (MomentjsService.isValid(date))
+            date = MomentjsService.format(date.toISOString(), 'DD/MM/yyyy');
+          let data: Washed = {
+            plate: GlobalService.validatePlate(plate),
+            matriculaEstrangeira: isEstrangeira,
+            type: row.getCell(3).value,
+            created: MomentjsService.getMoment(
+              hour + date,
+              'HH:mmDD/MM/yyyy'
+            ).toDate(),
+          };
+          if (isEstrangeira) data.plate = plate;
+          if (this.isValidateWashed(data)) values.push(data);
+          else if (data.plate) erros.push(data);
+        }
       }
     });
     if (erros.length > 0) throw erros;
@@ -174,7 +174,7 @@ export class ExcelService {
   private isValidateWashed(washed: Washed): boolean {
     if (
       (washed.plate || washed.matriculaEstrangeira) &&
-      MomentjsService.isValid(washed.created, '') &&
+      MomentjsService.isValid(washed.created) &&
       this.getWashTypes.includes(washed.type)
     )
       return true;

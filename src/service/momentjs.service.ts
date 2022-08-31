@@ -15,8 +15,8 @@ export class MomentjsService {
     return moment(date).format(value);
   }
 
-  static isValid(date: any, format: string): boolean {
-    return moment(date, format, true).isValid();
+  static isValid(date: any): boolean {
+    return moment(date).isValid();
   }
 
   static getMoment(date: any, format: string): moment.Moment {
