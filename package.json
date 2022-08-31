@@ -1,12 +1,8 @@
 {
-  "name": "teste",
-  "version": "0.0.0",
+  "name": "import-excel",
+  "version": "0.1.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s"
   },
   "private": true,
   "dependencies": {
@@ -19,6 +15,7 @@
     "@angular/platform-browser-dynamic": "^14.1.0",
     "@angular/router": "^14.1.0",
     "@types/node": "^18.7.6",
+    "conventional-changelog-cli": "^2.2.2",
     "exceljs": "^4.3.0",
     "file-saver": "^2.0.5",
     "moment": "^2.29.4",
