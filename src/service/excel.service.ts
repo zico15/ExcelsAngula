@@ -7,7 +7,7 @@ import * as fs from 'file-saver';
 export class ExcelService {
   private workbook = new Workbook();
 
-  constructor(private fileName: string) {
+  constructor() {
     this.generateExcel();
   }
 

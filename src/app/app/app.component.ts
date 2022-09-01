@@ -13,7 +13,7 @@ export class AppComponent {
     let file: File = event.target.files[0];
 
     console.log('file: ' + file);
-    let excel = new ExcelService('testeFile');
+    let excel = new ExcelService();
     await excel.importFile(file);
     try {
       this.fieldList = await excel.getValues(excel.getWorksheet(1));
@@ -24,7 +24,7 @@ export class AppComponent {
   }
 
   generateExcel() {
-    let excel = new ExcelService('testeSave');
+    let excel = new ExcelService();
     excel.exportFile();
   }
 }
